@@ -30,12 +30,27 @@ public_users.get('/',function (req, res) {
     return res.send(JSON.stringify(books,null,4));
 });
 
+public_users.get('/books',function (req, res) {
+    const get_books = new Promise((resolve,reject)=>{
+        resolve(res.send(JSON.stringify(books,null,4)));
+    });
+    get_books.then(console.log("get /books completed"));
+});
+
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
   return res.send(books[isbn]);
  });
   
+public_users.get('/books/isbn/:isbn',function (req, res) {
+    const isbn = req.params.isbn;
+    const get_books = new Promise((resolve,reject)=>{
+        resolve(res.send(books[isbn]));
+    });
+    get_books.then(console.log("get /books/isbn/"+isbn+" completed"));
+});
+
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
     const author = req.params.author;
@@ -49,6 +64,21 @@ public_users.get('/author/:author',function (req, res) {
     return res.send(JSON.stringify(booksByAuthor));
 });
 
+public_users.get('/books/author/:author',function (req, res) {
+    const author = req.params.author;
+    const get_books = new Promise((resolve,reject)=>{
+        booksByAuthor = {};
+        Object.keys(books).forEach((isbn)=>{
+            if ( books[isbn].author.toLowerCase()==author.toLowerCase() )
+            {
+                booksByAuthor[isbn]=books[isbn];
+            }
+        });
+        resolve(res.send(JSON.stringify(booksByAuthor)));
+    });
+    get_books.then(console.log("get /books/author/"+author+" completed"));
+});
+
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     const title = req.params.title;
@@ -60,6 +90,21 @@ public_users.get('/title/:title',function (req, res) {
         }
     });
     return res.send(JSON.stringify(booksWithTitle));
+});
+
+public_users.get('/books/title/:title',function (req, res) {
+    const title = req.params.title;
+    const get_books = new Promise((resolve,reject)=>{
+        booksWithTitle = {};
+        Object.keys(books).forEach((isbn)=>{
+            if ( books[isbn].title.toLowerCase()==title.toLowerCase() )
+            {
+                booksWithTitle[isbn]=books[isbn];
+            }
+        });
+        resolve(res.send(JSON.stringify(booksWithTitle)));
+    });
+    get_books.then(console.log("get /books/title/"+title+" completed"));
 });
 
 //  Get book review
